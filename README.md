@@ -6,3 +6,7 @@ This is a simple application to check updates for the game Starsector. It does e
 
 1) Without using config.txt - drop the folder with the app into Starsector's core folder (for instance D:\Starsector\SS_VC\) and launch from there.
 2) Using config.txt - replace the placeholder text in config.txt file with the path to your Starsector core folder (for instance D:\Starsector) and launch from anywhere.
+
+## Bug reports and feature requests
+
+If you've found a bug and/or want new functionality added to the app, contact Fwiffo in Starsector Discord.
