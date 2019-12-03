@@ -7,6 +7,7 @@ namespace Fwiffo_SS_VersionChecker
     {
         public string Id { get; set; }
         public string Name { get; set; }
+        public string Version { get; set; }
 
         [JsonIgnore] public VersionInfo LocalVersionInfo { get; set; } = null;
         [JsonIgnore] public VersionInfo MasterVersionInfo { get; set; } = null;
@@ -36,9 +37,13 @@ namespace Fwiffo_SS_VersionChecker
             {
                 return $"{Name} ({LocalVersionInfo} => {MasterVersionInfo})";
             }
-            else
+            else if (LocalVersionInfo != null)
             {
                 return $"{Name} ({LocalVersionInfo})";
+            }
+            else
+            {
+                return $"{Name} ({Version})";
             }
         }
     }
