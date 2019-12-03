@@ -134,6 +134,11 @@ namespace Fwiffo_SS_VersionChecker
 
         private static void ReadMods()
         {
+            allMods = new List<ModInfo>();
+            modsUpdate = new List<ModInfo>();
+            modsNoUpdate = new List<ModInfo>();
+            unsupportedMods = new List<ModInfo>();
+            masterlessMods = new List<ModInfo>();
             string starsectorFolderPath = File.ReadLines("config.txt").FirstOrDefault();
             string modFolderPath = null;
             try
