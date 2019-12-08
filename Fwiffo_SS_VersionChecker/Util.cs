@@ -13,8 +13,8 @@ namespace Fwiffo_SS_VersionChecker
         public static string ValidateJSON(string json)
         {
             json = Regex.Replace(json, @"#[^\r\n]*", "");
-            json = Regex.Replace(json, @"(""\w+"":) *([\.\w]+)(,*)(?=[\r\n\t])", @"$1 ""$2""$3");
-            json = Regex.Replace(json, @"('\w+':) *([\.\w]+)(,*)(?=[\r\n\t])", @"$1 '$2'$3");
+            json = Regex.Replace(json, @"(""\w+"":) *([\.\w]+)(,*)(?=[\r\n\t ])", @"$1 ""$2""$3");
+            json = Regex.Replace(json, @"('\w+':) *([\.\w]+)(,*)(?=[\r\n\t ])", @"$1 '$2'$3");
             return json;
         }
 
