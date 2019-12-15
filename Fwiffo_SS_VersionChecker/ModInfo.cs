@@ -28,7 +28,7 @@ namespace Fwiffo_SS_VersionChecker
             if (LocalVersionInfo.ModVersion == null || MasterVersionInfo.ModVersion == null)
                 return false;
 
-            return !LocalVersionInfo.ModVersion.Equals(MasterVersionInfo.ModVersion);
+            return LocalVersionInfo.ModVersion.Compare(MasterVersionInfo.ModVersion) < 0;
         }
 
         public override string ToString()

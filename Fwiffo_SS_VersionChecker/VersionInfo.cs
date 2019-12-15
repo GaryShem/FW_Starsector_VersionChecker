@@ -1,3 +1,5 @@
+using System;
+
 namespace Fwiffo_SS_VersionChecker
 {
     class VersionInfo
@@ -85,6 +87,18 @@ namespace Fwiffo_SS_VersionChecker
                     return Patch.Equals(mvi.Patch);
                 }
                 else return false;
+            }
+
+            public int Compare(ModVersionInfo info)
+            {
+                if (info == null) return 1;
+                int mjrCmp = String.Compare(Major, info.Major, StringComparison.OrdinalIgnoreCase);
+                int mnrCmp = String.Compare(Minor, info.Minor, StringComparison.OrdinalIgnoreCase);
+                int ptchCmp = String.Compare(Patch, info.Patch, StringComparison.OrdinalIgnoreCase);
+
+                if (mjrCmp > 0 || mnrCmp > 0 || ptchCmp > 0) return 1;
+                else if (mjrCmp < 0 || mnrCmp < 0 || ptchCmp < 0) return -1;
+                else return 0;
             }
         }
     }
