@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Fwiffo_SS_VersionChecker
 {
@@ -134,11 +135,7 @@ namespace Fwiffo_SS_VersionChecker
 
         private static void ReadMods()
         {
-            allMods = new List<ModInfo>();
-            modsUpdate = new List<ModInfo>();
-            modsNoUpdate = new List<ModInfo>();
-            unsupportedMods = new List<ModInfo>();
-            masterlessMods = new List<ModInfo>();
+            
             string starsectorFolderPath = File.ReadLines("config.txt").FirstOrDefault();
             string modFolderPath = null;
             try
@@ -186,6 +183,81 @@ namespace Fwiffo_SS_VersionChecker
             Console.WriteLine("Reading mods, wait a moment");
 
             var modFolders = Directory.GetDirectories(modFolderPath);
+            SingleThread(modFolders);
+
+            allMods = allMods.Distinct().ToList();
+            modsUpdate = modsUpdate.Distinct().ToList();
+            modsNoUpdate = modsNoUpdate.Distinct().ToList();
+            masterlessMods = masterlessMods.Distinct().ToList();
+            unsupportedMods = unsupportedMods.Distinct().ToList();
+            
+            unsupportedMods.Sort((x, y) => x.Name.CompareTo(y.Name));
+            allMods.Sort((x, y) => x.Name.CompareTo(y.Name));
+            modsUpdate.Sort((x, y) => x.Name.CompareTo(y.Name));
+            modsNoUpdate.Sort((x, y) => x.Name.CompareTo(y.Name));
+            masterlessMods.Sort((x, y) => x.Name.CompareTo(y.Name));
+            Console.WriteLine("Done reading mods");
+        }
+
+        private static void SingleThread(string[] modFolders)
+        {
+            foreach (var modPath in modFolders)
+            {
+                ModInfo modInfo = Util.ReadModInfo(modPath);
+
+                lock (allMods)
+                    allMods.Add(modInfo);
+
+                modInfo.LocalVersionInfo = Util.ReadVersionInfo(modPath);
+                if (modInfo.LocalVersionInfo != null && modInfo.LocalVersionInfo.MasterVersionFile != null)
+                {
+                    try
+                    {
+                        modInfo.MasterVersionInfo =
+                            Util.ReadVersionInfo(new Uri(modInfo.LocalVersionInfo.MasterVersionFile));
+                    }
+                    catch (WebException e)
+                    {
+                        masterlessMods.Add(modInfo);
+                    }
+                    catch (JsonReaderException e)
+                    {
+                        masterlessMods.Add(modInfo);
+                    }
+                }
+
+                if (modInfo.LocalVersionInfo == null)
+                {
+                    lock (unsupportedMods)
+                        unsupportedMods.Add(modInfo);
+                }
+                else if (modInfo.MasterVersionInfo == null)
+                {
+                    lock (masterlessMods)
+                        masterlessMods.Add(modInfo);
+                }
+                else if (modInfo.HasUpdate())
+                {
+                    lock (modsUpdate)
+                        modsUpdate.Add(modInfo);
+                }
+                else if (modInfo.HasUpdate() == false)
+                {
+                    lock (modsNoUpdate)
+                        modsNoUpdate.Add(modInfo);
+                }
+                else
+                {
+                    lock (allMods)
+                    {
+                        Console.WriteLine($"{modInfo.Name} is weird, please report it to Fwiffo in Starsector Discord");
+                    }
+                }
+            }
+        }
+        
+        private static void MultiThread(string[] modFolders)
+        {
             Parallel.ForEach(modFolders, modPath =>
             {
                 ModInfo modInfo = Util.ReadModInfo(modPath);
@@ -202,6 +274,10 @@ namespace Fwiffo_SS_VersionChecker
                             Util.ReadVersionInfo(new Uri(modInfo.LocalVersionInfo.MasterVersionFile));
                     }
                     catch (WebException e)
+                    {
+                        masterlessMods.Add(modInfo);
+                    }
+                    catch (JsonReaderException e)
                     {
                         masterlessMods.Add(modInfo);
                     }
@@ -235,12 +311,6 @@ namespace Fwiffo_SS_VersionChecker
                     }
                 }
             });
-            unsupportedMods.Sort((x, y) => x.Name.CompareTo(y.Name));
-            allMods.Sort((x, y) => x.Name.CompareTo(y.Name));
-            modsUpdate.Sort((x, y) => x.Name.CompareTo(y.Name));
-            modsNoUpdate.Sort((x, y) => x.Name.CompareTo(y.Name));
-            masterlessMods.Sort((x, y) => x.Name.CompareTo(y.Name));
-            Console.WriteLine("Done reading mods");
         }
     }
 }
