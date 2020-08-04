@@ -184,6 +184,7 @@ namespace Fwiffo_SS_VersionChecker
 
             var modFolders = Directory.GetDirectories(modFolderPath);
             SingleThread(modFolders);
+            // MultiThread(modFolders);
 
             allMods = allMods.Distinct().ToList();
             modsUpdate = modsUpdate.Distinct().ToList();
@@ -218,11 +219,15 @@ namespace Fwiffo_SS_VersionChecker
                     }
                     catch (WebException e)
                     {
-                        masterlessMods.Add(modInfo);
+                        lock (masterlessMods)
+                            masterlessMods.Add(modInfo);
+                        continue;
                     }
                     catch (JsonReaderException e)
                     {
-                        masterlessMods.Add(modInfo);
+                        lock (masterlessMods)
+                            masterlessMods.Add(modInfo);
+                        continue;
                     }
                 }
 
@@ -275,11 +280,15 @@ namespace Fwiffo_SS_VersionChecker
                     }
                     catch (WebException e)
                     {
-                        masterlessMods.Add(modInfo);
+                        lock (masterlessMods)
+                            masterlessMods.Add(modInfo);
+                        return;
                     }
                     catch (JsonReaderException e)
                     {
-                        masterlessMods.Add(modInfo);
+                        lock (masterlessMods)
+                            masterlessMods.Add(modInfo);
+                        return;
                     }
                 }
 
