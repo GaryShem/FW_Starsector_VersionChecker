@@ -138,6 +138,9 @@ namespace Fwiffo_SS_VersionChecker
             
             string starsectorFolderPath = File.ReadLines("config.txt").FirstOrDefault();
             string modFolderPath = null;
+#if DEBUG
+            starsectorFolderPath = @"D:\Starsector";
+#endif
             try
             {
                 string exeFileSS = Directory
@@ -184,7 +187,7 @@ namespace Fwiffo_SS_VersionChecker
 
             var modFolders = Directory.GetDirectories(modFolderPath);
 #if DEBUG
-            SingleThread(modFolders) 
+            SingleThread(modFolders); 
 #else
             MultiThread(modFolders);
 #endif
