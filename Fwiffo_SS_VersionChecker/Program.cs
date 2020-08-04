@@ -183,9 +183,11 @@ namespace Fwiffo_SS_VersionChecker
             Console.WriteLine("Reading mods, wait a moment");
 
             var modFolders = Directory.GetDirectories(modFolderPath);
-            SingleThread(modFolders);
-            // MultiThread(modFolders);
-
+#if DEBUG
+            SingleThread(modFolders) 
+#else
+            MultiThread(modFolders);
+#endif
             allMods = allMods.Distinct().ToList();
             modsUpdate = modsUpdate.Distinct().ToList();
             modsNoUpdate = modsNoUpdate.Distinct().ToList();
